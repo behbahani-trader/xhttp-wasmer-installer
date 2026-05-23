@@ -33,7 +33,8 @@ ok "git available"
 # Clone or update repository
 if [[ -d "$INSTALL_DIR/.git" ]]; then
     info "Updating existing installation…"
-    git -C "$INSTALL_DIR" pull --quiet
+    git -C "$INSTALL_DIR" fetch --quiet origin
+    git -C "$INSTALL_DIR" reset --hard origin/main --quiet
     ok "Repository updated"
 else
     info "Cloning XHTTP-Wasmer repository…"
