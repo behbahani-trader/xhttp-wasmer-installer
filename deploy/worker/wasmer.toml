@@ -1,0 +1,23 @@
+[package]
+name        = "xhttp-relay"
+version     = "1.0.0"
+description = "XHTTP transparent relay worker – forwards VLESS+XHTTP+TLS traffic through Wasmer Edge"
+license     = "GPL-3.0"
+readme      = "README.md"
+
+# Use Wasmer's WinterCG-compatible JS runtime (winterjs / edge.js)
+[[dependencies]]
+name = "wasmer/winterjs"
+version = "^1.1"
+
+[fs]
+# Mount the source directory so the runtime can find index.js
+"/src" = "src"
+
+[[command]]
+name   = "script"
+module = "wasmer/winterjs:winterjs"
+runner = "https://webc.org/runner/wasi"
+
+  [command.annotations.wasi]
+  main-args = ["/src/index.js"]

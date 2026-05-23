@@ -1,0 +1,48 @@
+---
+kind: wasmer.io/App.v0
+
+# App name — must be unique in your Wasmer namespace.
+# Change "YOUR_NAMESPACE" to your Wasmer username or org.
+name: YOUR_NAMESPACE/xhttp-relay
+
+description: "VLESS+XHTTP+TLS relay via Wasmer Edge"
+
+# The package defined in wasmer.toml (use "." for local directory)
+package: .
+
+# -----------------------------------------------------------------------
+# Environment variables — filled in by the install script or manually
+# -----------------------------------------------------------------------
+env:
+  # REQUIRED: hostname of your Xray server (must already have TLS/HTTPS)
+  # Example: "vpn.yourdomain.com"
+  TARGET_DOMAIN: "__TARGET_DOMAIN__"
+
+  # OPTIONAL: restrict relay to a specific path prefix
+  # Must match the xhttpSettings.path in your Xray inbound config.
+  # Leave empty ("") to relay all paths.
+  RELAY_PATH: "__RELAY_PATH__"
+
+  # OPTIONAL: shared secret added as "x-relay-key" request header by Xray.
+  # Leave empty ("") to disable authentication.
+  RELAY_KEY: "__RELAY_KEY__"
+
+# -----------------------------------------------------------------------
+# Redirect settings
+# -----------------------------------------------------------------------
+redirect:
+  force_https: true
+
+# -----------------------------------------------------------------------
+# Scaling
+# -----------------------------------------------------------------------
+scaling:
+  mode: single_concurrency
+
+# -----------------------------------------------------------------------
+# Locality — pick the region closest to your users (Iran → eu-west)
+# Available regions: us-east, eu-west, ap-southeast
+# -----------------------------------------------------------------------
+locality:
+  regions:
+    - eu-west

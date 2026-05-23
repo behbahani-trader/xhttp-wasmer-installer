@@ -1,0 +1,21 @@
+# Wasmer build outputs
+.wasmer/
+*.wasm
+
+# Node modules (if any tooling is added)
+node_modules/
+
+# Secrets – never commit these
+*.key
+*.pem
+*.crt
+xhttp-client-config.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
