@@ -84,40 +84,80 @@ for PORT in 80 443; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 2 – Install dependencies
+# Phase 2 – Install / update dependencies
 # ---------------------------------------------------------------------------
-section "Phase 2 – Installing dependencies"
+section "Phase 2 – Installing / updating dependencies"
 
-apt-get update -qq
-apt-get install -y -qq curl git unzip socat nginx
-ok "System packages installed"
+# ── apt packages ─────────────────────────────────────────────────────────────
+PKGS_NEEDED=()
+for PKG in curl git unzip socat; do
+    dpkg -l "$PKG" 2>/dev/null | grep -q "^ii" || PKGS_NEEDED+=("$PKG")
+done
+if [[ ${#PKGS_NEEDED[@]} -gt 0 ]]; then
+    info "Installing missing packages: ${PKGS_NEEDED[*]}…"
+    apt-get update -qq
+    apt-get install -y -qq "${PKGS_NEEDED[@]}"
+    ok "Installed: ${PKGS_NEEDED[*]}"
+else
+    ok "System packages already up to date"
+fi
 
-# Install Xray
-if ! command -v xray &>/dev/null; then
+# ── Xray ─────────────────────────────────────────────────────────────────────
+_latest_gh_tag() {
+    curl -fsSL "https://api.github.com/repos/$1/releases/latest" \
+        2>/dev/null | grep -oP '"tag_name":\s*"v\K[^"]+' | head -1 || echo ""
+}
+
+XRAY_LATEST=$(_latest_gh_tag "XTLS/Xray-core")
+if command -v xray &>/dev/null; then
+    XRAY_CURRENT=$(xray version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1 || echo "0")
+    if [[ -n "$XRAY_LATEST" && "$XRAY_CURRENT" != "$XRAY_LATEST" ]]; then
+        info "Updating Xray  $XRAY_CURRENT → $XRAY_LATEST …"
+        bash <(curl -fsSL https://github.com/XTLS/Xray-install/raw/main/install-release.sh) 2>/dev/null
+    else
+        ok "Xray $XRAY_CURRENT is up to date"
+    fi
+else
     info "Installing Xray-core…"
     bash <(curl -fsSL https://github.com/XTLS/Xray-install/raw/main/install-release.sh)
 fi
-XRAY_VER=$(xray version 2>&1 | head -1 | grep -oP '\d+\.\d+\.\d+' | head -1 || echo "unknown")
-ok "Xray $XRAY_VER installed"
+XRAY_VER=$(xray version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1 || echo "unknown")
+ok "Xray $XRAY_VER ready"
 
-# Install acme.sh
-if [[ ! -f ~/.acme.sh/acme.sh ]]; then
+# ── acme.sh ───────────────────────────────────────────────────────────────────
+if [[ -f ~/.acme.sh/acme.sh ]]; then
+    info "Upgrading acme.sh…"
+    ~/.acme.sh/acme.sh --upgrade --auto-upgrade 2>/dev/null || true
+    ok "acme.sh upgraded"
+else
     info "Installing acme.sh…"
-    curl -fsSL https://get.acme.sh | sh -s email="$CFG_EMAIL" 2>/dev/null
+    curl -fsSL https://get.acme.sh | sh -s email="placeholder@install.local" 2>/dev/null
     source ~/.bashrc 2>/dev/null || true
+    ok "acme.sh installed"
 fi
-ok "acme.sh ready"
 
-# Install Wasmer CLI
-if ! command -v wasmer &>/dev/null; then
+# ── Wasmer CLI ────────────────────────────────────────────────────────────────
+export PATH="$HOME/.wasmer/bin:$PATH"
+source "$HOME/.wasmer/wasmer.sh" 2>/dev/null || true
+
+WASMER_LATEST=$(_latest_gh_tag "wasmerio/wasmer")
+if command -v wasmer &>/dev/null; then
+    WASMER_CURRENT=$(wasmer --version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1 || echo "0")
+    if [[ -n "$WASMER_LATEST" && "$WASMER_CURRENT" != "$WASMER_LATEST" ]]; then
+        info "Updating Wasmer CLI  $WASMER_CURRENT → $WASMER_LATEST …"
+        curl -fsSL https://get.wasmer.io | sh 2>/dev/null
+        source "$HOME/.wasmer/wasmer.sh" 2>/dev/null || true
+    else
+        ok "Wasmer CLI $WASMER_CURRENT is up to date"
+    fi
+else
     info "Installing Wasmer CLI…"
     curl -fsSL https://get.wasmer.io | sh
-    # Re-source PATH so wasmer is available in this session
     export PATH="$HOME/.wasmer/bin:$PATH"
     source "$HOME/.wasmer/wasmer.sh" 2>/dev/null || true
 fi
-WASMER_VER=$(wasmer --version 2>&1 | head -1 || echo "unknown")
-ok "Wasmer $WASMER_VER installed"
+WASMER_VER=$(wasmer --version 2>&1 | grep -oP '\d+\.\d+\.\d+' | head -1 || echo "unknown")
+ok "Wasmer CLI $WASMER_VER ready"
 
 # ---------------------------------------------------------------------------
 # Phase 3 – User input
