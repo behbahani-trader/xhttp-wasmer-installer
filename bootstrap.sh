@@ -3,7 +3,7 @@
 # XHTTP-Wasmer Bootstrap (one-liner entry point)
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/YOUR_REPO/main/bootstrap.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/behbahani-trader/xhttp-wasmer-installer/main/bootstrap.sh)
 #
 # Build: avc-7f3a92e1-2025-wasmer
 # =============================================================================
@@ -20,7 +20,7 @@ die()  { echo -e "${RED}  ✘  ${RESET}$*" >&2; exit 1; }
 [[ $EUID -eq 0 ]] || die "Run as root: sudo bash <(curl ...)"
 
 BUILD_ID="avc-7f3a92e1-2025-wasmer"
-REPO_URL="https://github.com/YOUR_REPO/XHTTP-Wasmer"
+REPO_URL="https://github.com/behbahani-trader/xhttp-wasmer-installer"
 INSTALL_DIR="/root/XHTTP-Wasmer"
 
 # Install git if missing

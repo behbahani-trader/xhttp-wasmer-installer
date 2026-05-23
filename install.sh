@@ -7,7 +7,7 @@
 # Build: avc-7f3a92e1-2025-wasmer
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/YOUR_REPO/main/install.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/behbahani-trader/xhttp-wasmer-installer/main/install.sh)
 # =============================================================================
 
 set -euo pipefail
