@@ -458,7 +458,7 @@ EOF
 cat > "$DEPLOY_DIR/app.yaml" <<EOF
 ---
 kind: wasmer.io/App.v0
-name: ${WASMER_NS}/${WASMER_APP}
+name: ${WASMER_APP}
 description: "VLESS+XHTTP+TLS relay via Wasmer Edge"
 package: .
 
