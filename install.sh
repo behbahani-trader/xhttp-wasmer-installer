@@ -435,7 +435,7 @@ fi
 cat > "$DEPLOY_DIR/wasmer.toml" <<EOF
 [package]
 name        = "${WASMER_NS}/${WASMER_APP}"
-version     = "1.0.0"
+version     = "1.0.$(date +%s)"
 description = "XHTTP relay worker"
 license     = "GPL-3.0"
 
