@@ -475,7 +475,7 @@ scaling:
 
 locality:
   regions:
-    - eu-west
+    - fr-pari1
 EOF
 
 # Authenticate with Wasmer

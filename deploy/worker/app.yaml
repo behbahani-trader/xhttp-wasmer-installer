@@ -40,9 +40,9 @@ scaling:
   mode: single_concurrency
 
 # -----------------------------------------------------------------------
-# Locality — pick the region closest to your users (Iran → eu-west)
-# Available regions: us-east, eu-west, ap-southeast
+# Locality — pick the region closest to your users
+# Available: fr-pari1, de-falkenstein, be-mons1, us-losa1, us-hillsboro, us-socal1, us-ashburn
 # -----------------------------------------------------------------------
 locality:
   regions:
-    - eu-west
+    - fr-pari1
