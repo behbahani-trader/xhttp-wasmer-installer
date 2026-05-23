@@ -58,10 +58,13 @@ fi
 
 # Port 80 and 443 must be free (needed for acme.sh and Xray)
 # Stop common services that hold these ports before checking
-for SVC in nginx apache2 apache caddy haproxy; do
+for SVC in nginx apache2 apache caddy haproxy xray; do
     systemctl stop "$SVC" 2>/dev/null || true
     systemctl disable "$SVC" 2>/dev/null || true
 done
+# Also kill any stray xray process not managed by systemd
+pkill -x xray 2>/dev/null || true
+sleep 1
 
 for PORT in 80 443; do
     if ss -tlnp | grep -q ":${PORT}"; then
