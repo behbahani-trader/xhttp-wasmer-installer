@@ -30,18 +30,15 @@ if ! command -v git &>/dev/null; then
 fi
 ok "git available"
 
-# Clone or update repository
-if [[ -d "$INSTALL_DIR/.git" ]]; then
-    info "Updating existing installation…"
-    git -C "$INSTALL_DIR" fetch --quiet origin
-    git -C "$INSTALL_DIR" reset --hard origin/main --quiet
-    ok "Repository updated"
-else
-    info "Cloning XHTTP-Wasmer repository…"
-    git clone --depth 1 --branch main "$REPO_URL" "$INSTALL_DIR" 2>/dev/null \
-        || { warn "Clone failed — running from current directory"; INSTALL_DIR="$(pwd)"; }
-    ok "Repository ready"
+# Clone or update repository (always do a clean clone to avoid local-change conflicts)
+if [[ -d "$INSTALL_DIR" ]]; then
+    info "Removing existing installation for clean update…"
+    rm -rf "$INSTALL_DIR"
 fi
+info "Cloning XHTTP-Wasmer repository…"
+git clone --depth 1 --branch main "$REPO_URL" "$INSTALL_DIR" 2>/dev/null \
+    || { warn "Clone failed — running from current directory"; INSTALL_DIR="$(pwd)"; }
+ok "Repository ready"
 
 info "Build ID: $BUILD_ID"
 
