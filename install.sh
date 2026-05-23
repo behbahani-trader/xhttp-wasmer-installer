@@ -57,12 +57,23 @@ if [[ $TOTAL_RAM_MB -lt 512 ]]; then
 fi
 
 # Port 80 and 443 must be free (needed for acme.sh and Xray)
+# Stop common services that hold these ports before checking
+for SVC in nginx apache2 apache caddy haproxy; do
+    systemctl stop "$SVC" 2>/dev/null || true
+    systemctl disable "$SVC" 2>/dev/null || true
+done
+
 for PORT in 80 443; do
-    if ss -tlnp | grep -q ":${PORT} "; then
+    if ss -tlnp | grep -q ":${PORT}"; then
         warn "Port $PORT is in use. Attempting to free it…"
         fuser -k "${PORT}"/tcp 2>/dev/null || true
-        sleep 1
-        ss -tlnp | grep -q ":${PORT} " && die "Port $PORT still occupied after kill."
+        sleep 3
+        # Retry kill if still occupied
+        if ss -tlnp | grep -q ":${PORT}"; then
+            fuser -k -9 "${PORT}"/tcp 2>/dev/null || true
+            sleep 2
+        fi
+        ss -tlnp | grep -q ":${PORT}" && die "Port $PORT still occupied after kill. Run: ss -tlnp | grep :${PORT}"
         ok "Port $PORT freed"
     else
         ok "Port $PORT is free"
