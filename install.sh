@@ -448,7 +448,7 @@ ok "Wasmer authenticated"
 # Deploy
 info "Deploying to Wasmer Edge (this may take 1-2 minutes)…"
 cd "$DEPLOY_DIR"
-DEPLOY_OUTPUT=$(wasmer deploy --non-interactive 2>&1) || {
+DEPLOY_OUTPUT=$(wasmer deploy --non-interactive --owner "$WASMER_NS" 2>&1) || {
     echo "$DEPLOY_OUTPUT"
     die "Wasmer deploy failed."
 }
