@@ -439,9 +439,8 @@ version     = "1.0.0"
 description = "XHTTP relay worker"
 license     = "GPL-3.0"
 
-[[dependencies]]
-name    = "wasmer/winterjs"
-version = "^1.1"
+[dependencies]
+"wasmer/winterjs" = "^1"
 
 [fs]
 "/src" = "src"
@@ -451,8 +450,8 @@ name   = "script"
 module = "wasmer/winterjs:winterjs"
 runner = "https://webc.org/runner/wasi"
 
-  [command.annotations.wasi]
-  main-args = ["/src/index.js"]
+[command.annotations.wasi]
+main-args = ["/src/index.js"]
 EOF
 
 # Write app.yaml with real values substituted
